@@ -61,8 +61,17 @@ fn server_proc() -> io::Result<()> {
 }
 
 fn client_proc() -> io::Result<()> {
-    let address: String = get_input("Enter IP and port of server: ")?;
-    let socket: net::TcpStream = net::TcpStream::connect(address)?;
+    let socket: net::TcpStream = loop {
+        let address: String = get_input("Enter IP and port of server: ")?;
+        match net::TcpStream::connect(address) {
+            Err(e) => {
+                println!("Connection failed with the following error:\n{}\nPlease retry.\n", e);
+                continue;
+            }
+            Ok(socket) => break socket
+        };
+    };
+    
     println!("Established connection!");
     game_loop(socket, false)?;
     Ok(())
