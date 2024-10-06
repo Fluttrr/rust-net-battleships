@@ -3,6 +3,7 @@ use std::io::Write;
 use std::net;
 use std::io;
 use rand::prelude::*;
+use dialoguer::Select;
 
 const SIZE: usize = 10; // Maximum 10
 
@@ -22,16 +23,31 @@ enum OwnState {
 
 fn main() -> io::Result<()> {
     assert!(SIZE <= 10);
-    let mut ans: String = get_input("Do you want to host a game or connect? Type \"host\" or \"connect\": ")?;
-    while ans != "host" && ans != "connect" {
-        ans = get_input("Invalid answer, try again: ")?;
-    }
-    match ans.as_str() {
-        "host" => server_proc()?,
-        "connect" => client_proc()?,
+    let selection: String = main_menu();
+    match selection.as_str() {
+        "Host" => server_proc()?,
+        "Connect" => client_proc()?,
         _ => println!("Error!")
     }
     Ok(())
+}
+
+fn main_menu() -> String {
+    println!("
+██████╗  █████╗ ████████╗████████╗██╗     ███████╗███████╗██╗  ██╗██╗██████╗ ███████╗
+██╔══██╗██╔══██╗╚══██╔══╝╚══██╔══╝██║     ██╔════╝██╔════╝██║  ██║██║██╔══██╗██╔════╝
+██████╔╝███████║   ██║      ██║   ██║     █████╗  ███████╗███████║██║██████╔╝███████╗
+██╔══██╗██╔══██║   ██║      ██║   ██║     ██╔══╝  ╚════██║██╔══██║██║██╔═══╝ ╚════██║
+██████╔╝██║  ██║   ██║      ██║   ███████╗███████╗███████║██║  ██║██║██║     ███████║
+╚═════╝ ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚══════╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝╚═╝     ╚══════╝                                                                                        
+    ");
+    let items: Vec<&str> = vec!["Host", "Connect"];
+    let selection = Select::new()
+        .with_prompt("Do you want to host a game or connect to another player?")
+        .items(&items)
+        .interact()
+        .unwrap();
+    return items[selection].to_string();
 }
 
 fn server_proc() -> io::Result<()> {
