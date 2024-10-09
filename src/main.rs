@@ -96,6 +96,8 @@ fn game_loop(mut socket: net::TcpStream, turn: bool) -> io::Result<()> {
         turn_counter += 1;
         turn = !turn;
         println!();
+        println!("----------------------------------------");
+        println!();
     }
     Ok(())
 }
